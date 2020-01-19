@@ -2,6 +2,8 @@
 
 namespace App\Services\Shunt;
 
+use App\Services\ExchangeRateProviderInterface;
+
 class Scanner
 {
     private const OPERAND = 'operand';
@@ -42,11 +44,11 @@ class Scanner
     private $currency;
 
     /**
-     * @var \ExchangeRateProviderInterface
+     * @var ExchangeRateProviderInterface
      */
     private $exchangeRateProvider;
 
-    public function __construct(string $currency, \ExchangeRateProviderInterface $exchangeRateProvider)
+    public function __construct(string $currency, ExchangeRateProviderInterface $exchangeRateProvider)
     {
         $this->currency = $currency;
         $this->exchangeRateProvider = $exchangeRateProvider;
