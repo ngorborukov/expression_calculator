@@ -11,5 +11,5 @@ interface ExchangeRateProviderInterface
      *
      * @return float
      */
-    public function getRate($from, $to): float;
+    public function getRate(string $from, string $to): float;
 }

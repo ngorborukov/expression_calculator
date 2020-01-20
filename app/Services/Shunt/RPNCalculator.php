@@ -5,7 +5,7 @@ namespace App\Services\Shunt;
 use App\Services\ExchangeRateProviderInterface;
 use App\Services\ExpressionCalculatorInterface;
 
-class ShuntYardCalculator implements ExpressionCalculatorInterface
+class RPNCalculator implements ExpressionCalculatorInterface
 {
 
     private $currency;
@@ -15,6 +15,10 @@ class ShuntYardCalculator implements ExpressionCalculatorInterface
      */
     private $exchangeRateProvider;
 
+    /**
+     * @param string $currency
+     * @param ExchangeRateProviderInterface $exchangeRateProvider
+     */
     public function __construct(string $currency, ExchangeRateProviderInterface $exchangeRateProvider)
     {
         $this->currency = $currency;
@@ -25,6 +29,8 @@ class ShuntYardCalculator implements ExpressionCalculatorInterface
      * @param string $expression
      *
      * @return string
+     *
+     * @throws \Throwable
      */
     public function calculate(string $expression): string
     {

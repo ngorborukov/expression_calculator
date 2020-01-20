@@ -2,7 +2,7 @@
 namespace Shunt;
 
 use TestCase;
-use App\Services\Shunt\ShuntYardCalculator;
+use App\Services\Shunt\RPNCalculator;
 
 class ShuntYardCalculatorTest extends TestCase
 {
@@ -17,7 +17,7 @@ class ShuntYardCalculatorTest extends TestCase
      */
     public function testCalculate(string $expression, string $expected)
     {
-        $calculator = new ShuntYardCalculator('RUB', new ExchangeRateProvider());
+        $calculator = new RPNCalculator('RUB', new ExchangeRateProvider());
 
         $result = $calculator->calculate($expression);
 

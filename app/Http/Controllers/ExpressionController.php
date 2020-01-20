@@ -9,22 +9,37 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\Shunt\ShuntYardCalculator;
+use App\Services\ExpressionCalculatorInterface;
+use Illuminate\Http\Response;
 
 class ExpressionController extends Controller
 {
     /**
-     * @var ShuntYardCalculator
+     * @var ExpressionCalculatorInterface
      */
-    private $shuntYardCalculator;
+    private $expressionCalculator;
 
-    public function __construct(ShuntYardCalculator $shuntYardCalculator)
+    /**
+     * ExpressionController constructor.
+     *
+     * @param ExpressionCalculatorInterface $expressionCalculator
+     */
+    public function __construct(ExpressionCalculatorInterface $expressionCalculator)
     {
-        $this->shuntYardCalculator = $shuntYardCalculator;
+        $this->expressionCalculator = $expressionCalculator;
     }
 
+    /**
+     * @param $expression
+     *
+     * @return string|Response
+     */
     public function calculate($expression)
     {
-        return $this->shuntYardCalculator->calculate($expression);
+        try {
+            return $this->expressionCalculator->calculate(urldecode($expression));
+        } catch (\Throwable $e) {
+            return Response::create($e->getMessage(), 400);
+        }
     }
 }
