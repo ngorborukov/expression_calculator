@@ -2,12 +2,15 @@
 
 namespace App\Services\Shunt;
 
+use App\Exceptions\ExpressionCalculatorException;
 use App\Services\ExchangeRateProviderInterface;
 use App\Services\ExpressionCalculatorInterface;
 
 class RPNCalculator implements ExpressionCalculatorInterface
 {
-
+    /**
+     * @var string
+     */
     private $currency;
 
     /**
@@ -43,8 +46,7 @@ class RPNCalculator implements ExpressionCalculatorInterface
      * @param array $expressions
      *
      * @return string
-
-     * @throws \Throwable
+     * @throws ExpressionCalculatorException
      */
     private function calculateResult(array $expressions): string
     {
@@ -54,7 +56,7 @@ class RPNCalculator implements ExpressionCalculatorInterface
         foreach ($expressions as $expression) {
             if ($expression instanceof Operation) {
                 if (!$expression->enoughOperands($operandsStack)) {
-                    throw new \Exception('not enough arguments');
+                    throw new ExpressionCalculatorException(sprintf('Not enough arguments to execute operation of %s', $expression->getValue()));
                 }
                 $op2 = array_pop($operandsStack);
                 $op1 = array_pop($operandsStack);
@@ -72,9 +74,10 @@ class RPNCalculator implements ExpressionCalculatorInterface
                         $result = $op1->div($op2->getValue());
                         break;
                     default:
-                        throw new \Exception(sprintf('Unknown operation %s', $expression->getValue()));
+                        throw new ExpressionCalculatorException(sprintf('Unknown operation %s', $expression->getValue()));
                 }
                 $operandsStack[] = $result;
+
                 continue;
             }
 
@@ -84,7 +87,7 @@ class RPNCalculator implements ExpressionCalculatorInterface
         }
 
         if (!$result) {
-            throw new \Exception('Unable to calculate expression');
+            throw new ExpressionCalculatorException('Unable to calculate expression');
         }
 
         return sprintf('%.2f %s', $result->getValue(), $this->currency);
