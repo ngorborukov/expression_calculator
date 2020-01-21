@@ -11,4 +11,4 @@
 |
 */
 
-$router->get('/calculate/{expression}', 'ExpressionController@calculate');
+$router->get('/calculate', 'ExpressionController@calculate');

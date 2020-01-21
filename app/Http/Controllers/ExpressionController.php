@@ -1,15 +1,9 @@
 <?php
-/*
- * This file is part of ProFIT.
- *
- * Copyright (c) Opensoft (http://opensoftdev.com)
- *
- * The unauthorized use of this code outside the boundaries of Opensoft is prohibited.
- */
 
 namespace App\Http\Controllers;
 
 use App\Services\ExpressionCalculatorInterface;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class ExpressionController extends Controller
@@ -30,14 +24,14 @@ class ExpressionController extends Controller
     }
 
     /**
-     * @param $expression
+     * @param Request $request
      *
      * @return string|Response
      */
-    public function calculate($expression)
+    public function calculate(Request $request)
     {
         try {
-            return $this->expressionCalculator->calculate(urldecode($expression));
+            return $this->expressionCalculator->calculate($request->input('expr'));
         } catch (\Throwable $e) {
             return Response::create($e->getMessage(), 400);
         }

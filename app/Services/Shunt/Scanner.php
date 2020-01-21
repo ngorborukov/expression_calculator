@@ -82,57 +82,7 @@ class Scanner
                 continue;
             }
 
-            $tokenType = $this->getTokenType($value);
-            switch ($tokenType) {
-                case self::OPERAND:
-                    $this->queue[] = new Operand($value);
-
-                    break;
-                case self::OPERATION:
-                    while (!empty($this->stack)) {
-                        $prev = end($this->stack);
-                        if ($this->getTokenType($prev) == self::OPERATION &&
-                            $this->getPriority($prev) >= $this->getPriority($value)) {
-                            $this->queue[] = new Operation(array_pop($this->stack));
-                        } else {
-                            break;
-                        }
-                    }
-                    $this->stack[] = $value;
-
-                    break;
-                case self::PARENTHESIS:
-                    if ($value == self::P_LEFT) {
-                        $this->stack[] = $value;
-                        break;
-                    }
-
-                    $isOpenParenthesis = false;
-                    while ($tempToken = array_pop($this->stack)) {
-                        if ($tempToken == self::P_LEFT) {
-                            $isOpenParenthesis = true;
-                            break;
-                        }
-                        $this->queue[] = new Operation($tempToken);
-                    }
-
-                    if (!$isOpenParenthesis) {
-                        throw new \Exception('No left parenthesis found');
-                    }
-
-                    break;
-                case self::CURRENCY:
-                    $prevToken = array_pop($this->queue);
-                    if (!$prevToken instanceof Operand) {
-                        throw new \Exception('Invalid currency position');
-                    }
-                    $token = $prevToken->multiply($this->exchangeRateProvider->getRate($value, $this->currency));
-
-                    $this->queue[] = $token;
-                    break;
-                default:
-                    break;
-            }
+            $this->processValue($value);
         }
         while ($tempToken = array_pop($this->stack)) {
             if ($this->getTokenType($tempToken) == self::PARENTHESIS) {
@@ -141,7 +91,68 @@ class Scanner
             $this->queue[] = new Operation($tempToken);
         }
 
+        var_dump($this->queue);
         return $this->queue;
+    }
+
+    /**
+     * @param $value
+     *
+     * @throws \Exception
+     */
+    private function processValue($value): void
+    {
+        $tokenType = $this->getTokenType($value);
+        switch ($tokenType) {
+            case self::OPERAND:
+                $this->queue[] = new Operand($value);
+
+                break;
+            case self::OPERATION:
+                while (!empty($this->stack)) {
+                    $prev = end($this->stack);
+                    if ($this->getTokenType($prev) == self::OPERATION &&
+                        $this->getPriority($prev) >= $this->getPriority($value)) {
+                        $this->queue[] = new Operation(array_pop($this->stack));
+                    } else {
+                        break;
+                    }
+                }
+                $this->stack[] = $value;
+
+                break;
+            case self::PARENTHESIS:
+                if ($value == self::P_LEFT) {
+                    $this->stack[] = $value;
+                    break;
+                }
+
+                $isOpenParenthesis = false;
+                while ($tempToken = array_pop($this->stack)) {
+                    if ($tempToken == self::P_LEFT) {
+                        $isOpenParenthesis = true;
+                        break;
+                    }
+                    $this->queue[] = new Operation($tempToken);
+                }
+
+                if (!$isOpenParenthesis) {
+                    throw new \Exception('No left parenthesis found');
+                }
+
+                break;
+            case self::CURRENCY:
+                $prevToken = array_pop($this->queue);
+                if (!$prevToken instanceof Operand) {
+                    throw new \Exception('Invalid currency position');
+                }
+                $token = $prevToken->multiply($this->exchangeRateProvider->getRate($value, $this->currency));
+
+                $this->queue[] = $token;
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -174,7 +185,7 @@ class Scanner
     /**
      * @return int
      */
-    public function getPriority($operation): int
+    private function getPriority($operation): int
     {
         if ($operation === Operation::PLUS || $operation === Operation::MINUS) {
             return 1;
