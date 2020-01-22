@@ -48,6 +48,12 @@ class Scanner
      */
     private $exchangeRateProvider;
 
+    /**
+     * Scanner constructor.
+     *
+     * @param string $currency
+     * @param ExchangeRateProviderInterface $exchangeRateProvider
+     */
     public function __construct(string $currency, ExchangeRateProviderInterface $exchangeRateProvider)
     {
         $this->currency = $currency;
@@ -91,7 +97,6 @@ class Scanner
             $this->queue[] = new Operation($tempToken);
         }
 
-        var_dump($this->queue);
         return $this->queue;
     }
 

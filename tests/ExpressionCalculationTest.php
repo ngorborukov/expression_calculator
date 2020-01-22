@@ -9,10 +9,8 @@ class ExpressionCalculationTest extends TestCase
      */
     public function testExample()
     {
-        $this->get('/calculate/'. urlencode('((100 EUR + 20.5 USD)*10 - 30 RUB)/2'));
+        $this->get('/calculate?'. http_build_query(['expr' => '((100 EUR + 20.5 USD)*10)/2']));
 
-        $this->assertEquals(
-            '/1EUR +1 USD', $this->response->getContent()
-        );
+        $this->assertTrue($this->response->isSuccessful());
     }
 }

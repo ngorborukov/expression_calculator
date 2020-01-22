@@ -7,8 +7,6 @@ use App\Services\Shunt\RPNCalculator;
 class ShuntYardCalculatorTest extends TestCase
 {
 
-    //'((100 EUR + 20.5 USD)*10 - 30 RUB)/2'
-
     /**
      * @dataProvider calculateProvider
      *
